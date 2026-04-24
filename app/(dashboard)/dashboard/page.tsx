@@ -6,14 +6,15 @@ export default async function DashboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  const { data: usuario } = await supabase
+  const { data } = await supabase
     .from('usuarios')
     .select('rol')
-    .eq('id', user.id)
+    .eq('id', user!.id)
     .single()
 
-  // Redirigir según rol al dashboard específico
-  switch (usuario?.rol) {
+  const rol = data?.rol as string | undefined
+// Redirigir según rol al dashboard específico
+  switch (rol) {
     case 'enlace_municipal':
     case 'enlace_direccion':
       redirect('/dashboard/municipio')
