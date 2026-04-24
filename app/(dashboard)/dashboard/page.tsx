@@ -12,8 +12,8 @@ export default async function DashboardPage() {
     .eq('id', user!.id)
     .single()
 
-  const rol = data?.rol as string | undefined
-// Redirigir según rol al dashboard específico
+  const rol = (data as { rol: string } | null)?.rol
+
   switch (rol) {
     case 'enlace_municipal':
     case 'enlace_direccion':
