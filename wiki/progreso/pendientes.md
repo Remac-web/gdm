@@ -9,11 +9,7 @@
 
 Estas tareas permiten que un primer usuario real pueda usar la plataforma.
 
-### 1. Cargar catálogo GDM en base de datos
-- Ejecutar migraciones en Supabase: `01_extensions_enums.sql` → `06_storage_views.sql`
-- Poblar 8 módulos, 31 temas, 115 indicadores desde `raw/gdm/cuaderno-trabajo.md`
-- Crear seed de 59 municipios de San Luis Potosí
-- Requisito bloqueante para todo lo demás
+### ~~1. Cargar catálogo GDM en base de datos~~ ✓ Completo (2026-04-23)
 
 ### 2. Pantalla de captura de indicador
 - Ruta: `/dashboard/indicadores/[indicadorId]`
@@ -27,11 +23,11 @@ Estas tareas permiten que un primer usuario real pueda usar la plataforma.
 - Listado de evidencias por captura
 - Soft delete (`activo: false`)
 
-### 4. Panel del enlace municipal
-- Ruta: `/dashboard/municipio/[id]`
-- Semáforo visual por módulo (8 módulos)
-- Lista de capturas pendientes de validar
-- Acción: enviar captura a revisión IES
+### ~~4. Panel del enlace municipal~~ ✓ Completo (2026-05-15)
+- Ruta final: `/dashboard/municipio` (municipio_id viene del perfil del usuario)
+- Semáforo por módulo: 8 cards con color dominante, barra de progreso, conteos
+- Filtros ciclo/etapa via query params (sin JS cliente)
+- Tabla de capturas en estado `borrador` / `observado_ies`
 
 ### 5. Panel del revisor IES
 - Ruta: `/dashboard/revisiones`
@@ -83,6 +79,6 @@ Estas tareas permiten que un primer usuario real pueda usar la plataforma.
 
 | Bloqueante | Afecta a |
 |-----------|---------|
-| Migraciones SQL no ejecutadas | Todo el stack de datos |
+| ~~Migraciones SQL no ejecutadas~~ | ~~Todo el stack de datos~~ — **Resuelto 2026-04-23** |
 | `ANTHROPIC_API_KEY` no configurada en producción | Revisión IA |
 | Supabase Storage bucket no creado | Upload de evidencias |

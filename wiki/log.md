@@ -24,3 +24,5 @@
 [2026-05-15] | ingest | Fuentes GDM agregadas a raw/gdm/: lineamientos.md (~521p INAFED enero 2026), cuaderno-trabajo.md (~101p, 8 módulos 115 indicadores). Commit b67017a.
 
 [2026-05-15] | hito | Wiki del proyecto inicializada. CLAUDE.md creado. Patrón LLM Wiki (Karpathy) adoptado como protocolo de sesiones.
+
+[2026-05-15] | sesión | Confirmadas migraciones y catálogo GDM completos. Panel Enlace Municipal construido: semáforo 8 módulos, totales, capturas pendientes. Ver sesiones/2026-05-15.md.

@@ -43,6 +43,7 @@
 | Fecha | Sesión |
 |-------|--------|
 | 2026-04-23 | [progreso/sesiones/2026-04-23.md](progreso/sesiones/2026-04-23.md) — Scaffold inicial, tipos, estructura de rutas |
+| 2026-05-15 | [progreso/sesiones/2026-05-15.md](progreso/sesiones/2026-05-15.md) — Panel Enlace Municipal, semáforo por módulo |
 
 ## Convenciones
 
