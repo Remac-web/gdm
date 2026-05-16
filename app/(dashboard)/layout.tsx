@@ -3,6 +3,17 @@ import { redirect } from 'next/navigation'
 import Sidebar from '@/components/layout/sidebar'
 import Header from '@/components/layout/header'
 
+type UsuarioRow = {
+  id: string
+  nombre: string
+  apellidos: string | null
+  email: string
+  rol: string
+  municipio_id: string | null
+  direccion_id: string | null
+  activo: boolean
+}
+
 export default async function DashboardLayout({
   children
 }: {
@@ -13,16 +24,15 @@ export default async function DashboardLayout({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
-  // Query simple sin joins para evitar problemas de RLS
-  const { data: usuario } = await supabase
+  const { data: usuarioRaw } = await supabase
     .from('usuarios')
     .select('id, nombre, apellidos, email, rol, municipio_id, direccion_id, activo')
     .eq('id', user.id)
     .single()
 
+  const usuario = usuarioRaw as UsuarioRow | null
   if (!usuario) redirect('/login')
 
-  // Buscar nombre del municipio por separado si existe
   let municipioNombre: string | null = null
   if (usuario.municipio_id) {
     const { data: mun } = await supabase
@@ -33,7 +43,6 @@ export default async function DashboardLayout({
     municipioNombre = (mun as { nombre: string } | null)?.nombre ?? null
   }
 
-  // Construir objeto compatible con Sidebar y Header
   const usuarioConMunicipio = {
     ...usuario,
     municipios: municipioNombre ? { nombre: municipioNombre } : null,
