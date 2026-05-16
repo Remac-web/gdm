@@ -18,6 +18,9 @@ build/
 # Supabase
 supabase/.temp/
 
+# Obsidian
+.obsidian/
+
 # Misc
 .DS_Store
 *.pem
