@@ -1,6 +1,6 @@
 # Estado Actual — Governa GDM
 
-> Última actualización: 2026-05-15 (sesión 3)
+> Última actualización: 2026-05-15 (sesión 3 — actualización post-sesión)
 
 ## Resumen Ejecutivo
 
@@ -43,7 +43,7 @@ Medido por número de municipios con 0% de indicadores en óptimo:
 | **Tipos TypeScript** | Completo | `types/database.types.ts` + `types/index.ts` — todo el dominio tipado |
 | **Sistema de semáforo** | Completo | `SEMAFORO_CONFIG`, `calcularSemaforoGestion()` en `lib/utils.ts` |
 | **Redirect inteligente por rol** | Completo | `app/(dashboard)/dashboard/page.tsx` |
-| **Panel municipio** (`/dashboard/municipio`) | Completo | Semáforo por módulo (8 cards), totales, capturas pendientes. Ver `app/(dashboard)/dashboard/municipio/page.tsx` y `components/municipio/semaforo-card.tsx`. |
+| **Panel municipio** (`/dashboard/municipio`) | Completo | Semáforo por módulo (8 cards), totales, capturas pendientes. Fallback a `resultados_modulo_2025` cuando no hay capturas en ciclo 2025 — **en producción y funcionando**. |
 | **Captura de indicadores** (`/indicadores`) | No iniciado | Solo directorio creado |
 | **Gestión de evidencias** (`/evidencias`) | No iniciado | Solo directorio creado |
 | **Panel revisor IES** (`/revisiones`) | No iniciado | Solo directorio creado |
@@ -55,7 +55,7 @@ Medido por número de municipios con 0% de indicadores en óptimo:
 | **Gráficas de semáforo** (`components/charts/`) | No iniciado | Directorio creado |
 | **Hooks personalizados** (`lib/hooks/`) | No iniciado | Directorio creado |
 | **Integración Claude API** | No iniciado | `ANTHROPIC_API_KEY` en env, lógica pendiente |
-| **Base de datos en producción** | Completo | Migraciones ejecutadas (sesión 2026-04-23). Catálogo cargado: 8 módulos, 31 temas, 115 indicadores, 59 municipios SLP. Usuario admin creado. |
+| **Base de datos en producción** | Completo | Migraciones ejecutadas (sesión 2026-04-23). Catálogo cargado: 8 módulos, 31 temas, 115 indicadores, 59 municipios SLP. Usuario admin creado. Tabla `resultados_modulo_2025` migrada y cargada (2026-05-15). |
 | **Fuentes GDM en raw/** | Completo | `lineamientos.md` y `cuaderno-trabajo.md` agregados (2026-05-15) |
 
 ## Infraestructura y DevOps
