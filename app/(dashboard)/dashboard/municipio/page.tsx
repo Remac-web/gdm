@@ -29,7 +29,7 @@ const ETAPAS: { value: EtapaGDM; label: string }[] = [
 export default async function MunicipioDashboardPage({
   searchParams,
 }: {
-  searchParams: { ciclo?: string; etapa?: string }
+  searchParams: { ciclo?: string; etapa?: string; municipio_id?: string }
 }) {
   const supabase = createClient()
 
@@ -44,7 +44,9 @@ export default async function MunicipioDashboardPage({
 
   const usuario = usuarioRaw as unknown as UsuarioConMunicipio | null
 
-  if (!usuario?.municipio_id) redirect('/dashboard')
+  // Admin (y cualquier rol sin municipio asignado) puede acceder vía ?municipio_id=UUID
+  const municipioIdEfectivo = usuario?.municipio_id ?? searchParams.municipio_id ?? null
+  if (!municipioIdEfectivo) redirect('/dashboard')
 
   const ciclo = (CICLOS.includes(searchParams.ciclo as CicloGDM)
     ? searchParams.ciclo
@@ -54,7 +56,18 @@ export default async function MunicipioDashboardPage({
     ? searchParams.etapa
     : 'diagnostico') as EtapaGDM
 
-  const municipioId = usuario.municipio_id as string
+  const municipioId = municipioIdEfectivo
+
+  // Si el municipio viene del param (admin bypass), buscar el nombre por separado
+  let municipioNombre = usuario?.municipios?.nombre
+  if (!usuario?.municipio_id && searchParams.municipio_id) {
+    const { data: mun } = await supabase
+      .from('municipios')
+      .select('nombre')
+      .eq('id', searchParams.municipio_id)
+      .single()
+    municipioNombre = (mun as { nombre: string } | null)?.nombre
+  }
 
   const [modulosResult, capturasResult] = await Promise.all([
     supabase
@@ -77,7 +90,7 @@ export default async function MunicipioDashboardPage({
 
   const modulos = modulosResult.data as SemaforoModulo[] | null
   const capturas = capturasResult.data as CapturaResumen[] | null
-  const municipioNombre = usuario.municipios?.nombre ?? 'Mi municipio'
+  const nombre = municipioNombre ?? 'Mi municipio'
 
   const totales = (modulos ?? []).reduce(
     (acc, m) => ({
@@ -94,7 +107,7 @@ export default async function MunicipioDashboardPage({
 
       {/* Encabezado */}
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">{municipioNombre}</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{nombre}</h1>
         <p className="text-sm text-gray-500 mt-1">Panel del Enlace Municipal · GDM 2025-2027</p>
       </div>
 
