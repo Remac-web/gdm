@@ -26,3 +26,5 @@
 [2026-05-15] | hito | Wiki del proyecto inicializada. CLAUDE.md creado. Patrón LLM Wiki (Karpathy) adoptado como protocolo de sesiones.
 
 [2026-05-15] | sesión | Confirmadas migraciones y catálogo GDM completos. Panel Enlace Municipal construido: semáforo 8 módulos, totales, capturas pendientes. Ver sesiones/2026-05-15.md.
+
+[2026-05-15] | ingest | resultados-gdm-2025-slp.md procesado desde raw/gdm/. Creados wiki/datos/resultados-gdm-2025-slp.md (análisis cluster/módulos) + 43 notas en wiki/municipios/ (semáforo por módulo). wiki/index.md actualizado con secciones Datos GDM y Municipios.

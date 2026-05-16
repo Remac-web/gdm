@@ -53,6 +53,18 @@
 | [convenciones/base-datos.md](convenciones/base-datos.md) | Nomenclatura PostgreSQL/Supabase, RLS, migraciones |
 | [convenciones/commits.md](convenciones/commits.md) | Formato de commits (Conventional Commits en español) |
 
+## Datos GDM
+
+| Página | Descripción |
+|--------|-------------|
+| [datos/resultados-gdm-2025-slp.md](datos/resultados-gdm-2025-slp.md) | Análisis de resultados GDM 2025 SLP: clusters, patrones por módulo, municipios atípicos |
+
+## Municipios
+
+[municipios/index.md](municipios/index.md) — Tabla de los 43 municipios con dictamen validado (posición, % avance, cluster).
+
+Notas individuales: `wiki/municipios/<nombre>.md` — semáforo por módulo para cada municipio.
+
 ## Log
 
 [log.md](log.md) — Registro cronológico de sesiones, decisiones e hitos.
@@ -65,3 +77,4 @@
 |---------|-------------|
 | `raw/gdm/lineamientos.md` | Lineamientos operativos GDM INAFED 2025-2027 (enero 2026) |
 | `raw/gdm/cuaderno-trabajo.md` | Cuaderno de trabajo GDM 2025-2027: 8 módulos, 31 temas, 115 indicadores |
+| `raw/gdm/resultados-gdm-2025-slp.md` | Resultados GDM 2025 SLP: 43 municipios, % avance y semáforo por módulo (18-dic-2025) |

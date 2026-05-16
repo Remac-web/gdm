@@ -1,10 +1,38 @@
 # Estado Actual — Governa GDM
 
-> Última actualización: 2026-05-15 (sesión 2)
+> Última actualización: 2026-05-15 (sesión 3)
 
 ## Resumen Ejecutivo
 
 El proyecto está en fase de **scaffold completo**. La arquitectura, tipos, autenticación y estructura de rutas están implementados. Los módulos funcionales (UI de captura, revisión, panel estatal) aún no están construidos.
+
+## Resultados GDM 2025 — Línea Base SLP
+
+> Fuente primaria: `raw/gdm/resultados-gdm-2025-slp.md` · Ingesta: 2026-05-15  
+> Ver análisis completo en [[datos/resultados-gdm-2025-slp]]
+
+| Indicador | Valor |
+|-----------|-------|
+| Municipios con dictamen concluido | **43 / 59 (73%)** |
+| Promedio estatal de avance | **~36%** |
+| 1er lugar | Rioverde — 99.1% |
+| 2º lugar | Soledad de Graciano Sánchez — 93.4% |
+| 3er lugar | Villa de Reyes — 77.4% |
+| Último lugar | Ciudad del Maíz — 2.6% |
+| IES participantes | 5 |
+| Municipios sin dictamen (16) | No aparecen en el reporte — no concluyeron revisión 2025 |
+
+### Módulos con Mayor Rezago
+
+Medido por número de municipios con 0% de indicadores en óptimo:
+
+| Módulo | Municipios en 0% | Lectura |
+|--------|-----------------|---------|
+| **M7 Fomento Económico** | ~21 / 43 (49%) | Módulo más abandonado del ciclo |
+| **M5 Gestión Ambiental** | ~16 / 43 (37%) | Capacidad técnica muy escasa |
+| **M4 Servicios Públicos** | ~15 / 43 (35%) | Brecha de infraestructura |
+| **M6 Desarrollo Social** | ~10 / 43 (23%) | Mejora con apoyo IES |
+| **M3 Catastro Municipal** | ~7 / 43 (16%) | Modernización catastral pendiente |
 
 ## Estado por Módulo Funcional
 
@@ -37,7 +65,7 @@ El proyecto está en fase de **scaffold completo**. La arquitectura, tipos, aute
 | Repositorio GitHub | Activo (`Remac-web/gdm`) |
 | Deploy en Vercel | No configurado |
 | Variables de entorno en producción | No configuradas |
-| Base de datos Supabase | Proyecto creado (sin migraciones ejecutadas) |
+| Base de datos Supabase | Migraciones ejecutadas. Catálogo GDM cargado (8 mód, 31 temas, 115 ind, 59 mun). |
 
 ## Calidad del Código
 
