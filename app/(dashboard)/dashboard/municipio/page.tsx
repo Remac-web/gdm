@@ -18,6 +18,13 @@ type CapturaResumen = {
   updated_at: string
 }
 
+type ModuloCatalogo = {
+  id: number
+  nombre: string
+  total_gestion: number
+  total_desempeno: number
+}
+
 const CICLOS: CicloGDM[] = ['2025', '2026', '2027']
 
 const ETAPAS: { value: EtapaGDM; label: string }[] = [
@@ -69,7 +76,11 @@ export default async function MunicipioDashboardPage({
     municipioNombre = (mun as { nombre: string } | null)?.nombre
   }
 
-  const [modulosResult, capturasResult] = await Promise.all([
+  const [catalogoResult, semaforoResult, capturasResult] = await Promise.all([
+    supabase
+      .from('modulos')
+      .select('id, nombre, total_gestion, total_desempeno')
+      .order('id'),
     supabase
       .from('vista_semaforo_municipio')
       .select('*')
@@ -88,9 +99,36 @@ export default async function MunicipioDashboardPage({
       .limit(20),
   ])
 
-  const modulos = modulosResult.data as SemaforoModulo[] | null
-  const capturas = capturasResult.data as CapturaResumen[] | null
   const nombre = municipioNombre ?? 'Mi municipio'
+  const capturas = capturasResult.data as CapturaResumen[] | null
+
+  // Siempre mostrar los 8 módulos del catálogo.
+  // Los que no tienen capturas quedan con sin_captura = total_indicadores.
+  const catalogo = (catalogoResult.data as ModuloCatalogo[]) ?? []
+  const semaforoMap = new Map(
+    ((semaforoResult.data as SemaforoModulo[]) ?? []).map(m => [m.modulo_id, m])
+  )
+  const modulos: SemaforoModulo[] = catalogo.map(cat => {
+    const existente = semaforoMap.get(cat.id)
+    if (existente) return existente
+    const total = cat.total_gestion + cat.total_desempeno
+    return {
+      municipio_id: municipioId,
+      municipio_nombre: nombre,
+      modulo_id: cat.id,
+      modulo_nombre: cat.nombre,
+      ciclo,
+      etapa,
+      total_indicadores: total,
+      optimo: 0,
+      en_proceso: 0,
+      rezago: 0,
+      no_medible: 0,
+      sin_info: 0,
+      sin_captura: total,
+      pct_optimo: 0,
+    }
+  })
 
   const totales = (modulos ?? []).reduce(
     (acc, m) => ({
@@ -176,18 +214,11 @@ export default async function MunicipioDashboardPage({
         <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">
           Semáforo por módulo
         </h2>
-        {modulos && modulos.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {modulos.map((m) => (
-              <SemaforoCard key={m.modulo_id} modulo={m} />
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 p-12 text-center">
-            <p className="text-sm text-gray-400">No hay datos para este ciclo y etapa.</p>
-            <p className="text-xs text-gray-400 mt-1">Comienza capturando indicadores.</p>
-          </div>
-        )}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {modulos.map((m) => (
+            <SemaforoCard key={m.modulo_id} modulo={m} />
+          ))}
+        </div>
       </section>
 
       {/* Capturas que necesitan acción */}
