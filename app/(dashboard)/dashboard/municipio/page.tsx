@@ -5,12 +5,6 @@ import { SemaforoCard } from '@/components/municipio/semaforo-card'
 import { ESTADO_CAPTURA_CONFIG, formatFecha } from '@/lib/utils'
 import type { CicloGDM, EtapaGDM, EstadoCaptura, SemaforoModulo } from '@/types'
 
-type UsuarioConMunicipio = {
-  municipio_id: string | null
-  nombre: string
-  municipios: { nombre: string } | null
-}
-
 type CapturaResumen = {
   id: string
   indicador_id: number
@@ -28,9 +22,9 @@ type ModuloCatalogo = {
 const CICLOS: CicloGDM[] = ['2025', '2026', '2027']
 
 const ETAPAS: { value: EtapaGDM; label: string }[] = [
-  { value: 'diagnostico',  label: 'Diagnóstico' },
+  { value: 'diagnostico',   label: 'Diagnóstico' },
   { value: 'actualizacion', label: 'Actualización' },
-  { value: 'revision',     label: 'Revisión' },
+  { value: 'revision',      label: 'Revisión' },
 ]
 
 export default async function MunicipioDashboardPage({
@@ -43,17 +37,39 @@ export default async function MunicipioDashboardPage({
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  // Query separado — sin join para evitar problemas de RLS
   const { data: usuarioRaw } = await supabase
     .from('usuarios')
-    .select('municipio_id, nombre, municipios(nombre)')
+    .select('municipio_id, nombre, rol')
     .eq('id', user.id)
     .single()
 
-  const usuario = usuarioRaw as unknown as UsuarioConMunicipio | null
+  const usuario = usuarioRaw as { municipio_id: string | null; nombre: string; rol: string } | null
 
-  // Admin (y cualquier rol sin municipio asignado) puede acceder vía ?municipio_id=UUID
+  // Buscar nombre del municipio por separado
+  let municipioNombre: string | undefined
+  if (usuario?.municipio_id) {
+    const { data: mun } = await supabase
+      .from('municipios')
+      .select('nombre')
+      .eq('id', usuario.municipio_id)
+      .single()
+    municipioNombre = (mun as { nombre: string } | null)?.nombre ?? undefined
+  }
+
+  // Admin puede acceder vía ?municipio_id=UUID
   const municipioIdEfectivo = usuario?.municipio_id ?? searchParams.municipio_id ?? null
   if (!municipioIdEfectivo) redirect('/dashboard')
+
+  // Si admin pasa municipio_id por param, buscar el nombre
+  if (!usuario?.municipio_id && searchParams.municipio_id) {
+    const { data: mun } = await supabase
+      .from('municipios')
+      .select('nombre')
+      .eq('id', searchParams.municipio_id)
+      .single()
+    municipioNombre = (mun as { nombre: string } | null)?.nombre ?? undefined
+  }
 
   const ciclo = (CICLOS.includes(searchParams.ciclo as CicloGDM)
     ? searchParams.ciclo
@@ -64,17 +80,6 @@ export default async function MunicipioDashboardPage({
     : 'diagnostico') as EtapaGDM
 
   const municipioId = municipioIdEfectivo
-
-  // Si el municipio viene del param (admin bypass), buscar el nombre por separado
-  let municipioNombre = usuario?.municipios?.nombre
-  if (!usuario?.municipio_id && searchParams.municipio_id) {
-    const { data: mun } = await supabase
-      .from('municipios')
-      .select('nombre')
-      .eq('id', searchParams.municipio_id)
-      .single()
-    municipioNombre = (mun as { nombre: string } | null)?.nombre
-  }
 
   const [catalogoResult, semaforoResult, capturasResult] = await Promise.all([
     supabase
@@ -102,8 +107,6 @@ export default async function MunicipioDashboardPage({
   const nombre = municipioNombre ?? 'Mi municipio'
   const capturas = capturasResult.data as CapturaResumen[] | null
 
-  // Siempre mostrar los 8 módulos del catálogo.
-  // Los que no tienen capturas quedan con sin_captura = total_indicadores.
   const catalogo = (catalogoResult.data as ModuloCatalogo[]) ?? []
   const semaforoMap = new Map(
     ((semaforoResult.data as SemaforoModulo[]) ?? []).map(m => [m.modulo_id, m])
@@ -130,7 +133,7 @@ export default async function MunicipioDashboardPage({
     }
   })
 
-  const totales = (modulos ?? []).reduce(
+  const totales = modulos.reduce(
     (acc, m) => ({
       optimo:     acc.optimo     + m.optimo,
       en_proceso: acc.en_proceso + m.en_proceso,
@@ -146,7 +149,7 @@ export default async function MunicipioDashboardPage({
       {/* Encabezado */}
       <div>
         <h1 className="text-2xl font-bold text-gray-900">{nombre}</h1>
-        <p className="text-sm text-gray-500 mt-1">Panel del Enlace Municipal · GDM 2025-2027</p>
+        <p className="text-sm text-gray-500 mt-1">Panel del Enlace Municipal · GDM 2025–2027</p>
       </div>
 
       {/* Selectores ciclo / etapa */}
