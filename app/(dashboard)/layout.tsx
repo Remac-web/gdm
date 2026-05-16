@@ -2,13 +2,14 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Sidebar from '@/components/layout/sidebar'
 import Header from '@/components/layout/header'
+import type { RolUsuario } from '@/types'
 
 type UsuarioRow = {
   id: string
   nombre: string
   apellidos: string | null
   email: string
-  rol: string
+  rol: RolUsuario
   municipio_id: string | null
   direccion_id: string | null
   activo: boolean
