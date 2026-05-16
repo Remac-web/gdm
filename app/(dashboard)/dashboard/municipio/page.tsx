@@ -19,6 +19,18 @@ type ModuloCatalogo = {
   total_desempeno: number
 }
 
+type Resultado2025Row = {
+  modulo_num: number
+  modulo_nombre: string
+  verde: number
+  amarillo: number
+  rojo: number
+  nd: number
+  nm: number
+  total: number
+  pct_optimo: number
+}
+
 const CICLOS: CicloGDM[] = ['2025', '2026', '2027']
 
 const ETAPAS: { value: EtapaGDM; label: string }[] = [
@@ -81,7 +93,9 @@ export default async function MunicipioDashboardPage({
 
   const municipioId = municipioIdEfectivo
 
-  const [catalogoResult, semaforoResult, capturasResult] = await Promise.all([
+  const nombre = municipioNombre ?? 'Mi municipio'
+
+  const [catalogoResult, semaforoResult, capturasResult, resultados2025Result] = await Promise.all([
     supabase
       .from('modulos')
       .select('id, nombre, total_gestion, total_desempeno')
@@ -102,15 +116,50 @@ export default async function MunicipioDashboardPage({
       .in('estado', ['borrador', 'observado_ies'])
       .order('updated_at', { ascending: false })
       .limit(20),
+    ciclo === '2025'
+      ? supabase
+          .from('resultados_modulo_2025')
+          .select('*')
+          .eq('municipio', nombre)
+          .order('modulo_num')
+      : Promise.resolve({ data: null }),
   ])
 
-  const nombre = municipioNombre ?? 'Mi municipio'
   const capturas = capturasResult.data as CapturaResumen[] | null
 
   const catalogo = (catalogoResult.data as ModuloCatalogo[]) ?? []
-  const semaforoMap = new Map(
-    ((semaforoResult.data as SemaforoModulo[]) ?? []).map(m => [m.modulo_id, m])
-  )
+  const vistaData = (semaforoResult.data as SemaforoModulo[]) ?? []
+  let semaforoMap: Map<number, SemaforoModulo>
+
+  if (vistaData.length > 0) {
+    semaforoMap = new Map(vistaData.map(m => [m.modulo_id, m]))
+  } else if (ciclo === '2025' && Array.isArray(resultados2025Result.data) && resultados2025Result.data.length > 0) {
+    const filas = resultados2025Result.data as unknown as Resultado2025Row[]
+    semaforoMap = new Map(
+      filas.map(f => [
+        f.modulo_num,
+        {
+          municipio_id: municipioId,
+          municipio_nombre: nombre,
+          modulo_id: f.modulo_num,
+          modulo_nombre: f.modulo_nombre,
+          ciclo,
+          etapa: 'revision' as EtapaGDM,
+          total_indicadores: f.total,
+          optimo: f.verde,
+          en_proceso: f.amarillo,
+          rezago: f.rojo,
+          no_medible: f.nm,
+          sin_info: f.nd,
+          sin_captura: 0,
+          pct_optimo: f.pct_optimo,
+        },
+      ])
+    )
+  } else {
+    semaforoMap = new Map()
+  }
+
   const modulos: SemaforoModulo[] = catalogo.map(cat => {
     const existente = semaforoMap.get(cat.id)
     if (existente) return existente
